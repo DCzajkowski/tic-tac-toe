@@ -5,9 +5,9 @@
                 v-for="(cell, j) in row"
                 :key="j"
                 class="border flex items-center justify-center"
-                :class="(cell.value === null) ? 'cursor-pointer' : 'cursor-default'"
+                :class="((isAvailable(i, j) && debug) ? 'bg-green-lightest ' : '') + ((cell.value === null) ? 'cursor-pointer' : 'cursor-default')"
                 :style="cellSize"
-                @click="setCell(i, j)"
+                v-on="(cell.value === null) ? { click: () => setCell(i, j) } : {}"
             >
                 {{ cell.value }}
             </div>
@@ -16,6 +16,8 @@
 </template>
 
 <script>
+    import _ from 'lodash'
+
     export default {
         name: 'Game',
         computed: {
@@ -26,6 +28,12 @@
                 const size = window.innerWidth / 100 + 'px'
 
                 return `width: ${size}; height: ${size}`
+            },
+            isAvailable() {
+                return (i, j) => _.some(this.$store.getters.available, { i, j })
+            },
+            debug() {
+                return process.env.NODE_ENV !== 'production'
             },
         },
         methods: {
