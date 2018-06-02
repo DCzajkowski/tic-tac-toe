@@ -1,0 +1,43 @@
+<template>
+    <div class="flex flex-col">
+        <div v-for="(row, i) in board" :key="i" class="flex">
+            <div
+                v-for="(cell, j) in row"
+                :key="j"
+                class="border flex items-center justify-center"
+                :class="(cell.value === null) ? 'cursor-pointer' : 'cursor-default'"
+                :style="cellSize"
+                @click="setCell(i, j)"
+            >
+                {{ cell.value }}
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    export default {
+        name: 'Game',
+        computed: {
+            board() {
+                return this.$store.getters.board
+            },
+            cellSize() {
+                const size = window.innerWidth / 100 + 'px'
+
+                return `width: ${size}; height: ${size}`
+            },
+        },
+        methods: {
+            setCell(i, j) {
+                if (this.$store.getters.cell(i, j).value === null) {
+                    this.$store.commit('cell', { i, j, value: 'x' })
+                    this.$store.dispatch('calculateNextMove')
+                }
+            },
+        },
+        created() {
+            this.$store.dispatch('initBoard')
+        },
+    }
+</script>

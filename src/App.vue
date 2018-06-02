@@ -11,6 +11,3 @@
 </script>
 
 <style src="./styles/app.css"></style>
-<style>
-    /* */
-</style>
