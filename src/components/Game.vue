@@ -4,7 +4,7 @@
             <div
                 v-for="(cell, j) in row"
                 :key="j"
-                class="border flex items-center justify-center"
+                class="border flex items-center justify-center hover:bg-grey-lightest"
                 :class="((isAvailable(i, j) && debug) ? 'bg-green-lightest ' : '') + ((cell.value === null) ? 'cursor-pointer' : 'cursor-default')"
                 :style="cellSize"
                 v-on="(cell.value === null) ? { click: () => setCell(i, j) } : {}"
