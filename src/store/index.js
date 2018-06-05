@@ -18,8 +18,8 @@ export default new Vuex.Store({
         available(state, available) {
             state.available = available
         },
-        cell(state, { i, j, value }) {
-            state.board[i][j].value = value
+        cell(state, { x, y, value }) {
+            state.board[x][y].value = value
         },
     },
     getters: {
@@ -30,31 +30,31 @@ export default new Vuex.Store({
             return state.board
         },
         cell(state) {
-            return (i, j) => state.board[i][j]
+            return (x, y) => state.board[x][y]
         },
     },
     actions: {
         initBoard({ commit }) {
             let board = []
 
-            for (let i = 0; i < process.env.BOARD_SIZE; i++) {
-                board[i] = []
-                for (let j = 0; j < process.env.BOARD_SIZE; j++) {
-                    board[i][j] = { value: null }
+            for (let x = 0; x < process.env.BOARD_SIZE; x++) {
+                board[x] = []
+                for (let y = 0; y < process.env.BOARD_SIZE; y++) {
+                    board[x][y] = { x, y, value: null }
                 }
             }
 
             commit('board', board)
         },
         calculateNextMove(store) {
-            const { i, j } = AI.nextMove(store.getters.board)
+            const { x, y } = AI.nextMove(store.getters.board)
 
             store.commit('available', AI.getMoves())
 
             store.commit('cell', {
-                i,
-                j,
-                value: 'o',
+                x,
+                y,
+                value: 1,
             })
         },
     },

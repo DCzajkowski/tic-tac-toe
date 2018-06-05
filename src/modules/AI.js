@@ -4,45 +4,45 @@ export default class AI {
     static nextMove(board) {
         this.board = board
 
-        return { i: 1, j: 1 }
+        return { x: 1, y: 1 }
     }
 
     /**
-     * @return Array<Object<i: int, j: int>>
+     * @return Array<Object<x: int, y: int>>
      */
     static getMoves() {
         const occupied = []
 
-        for (let i = 0; i < process.env.BOARD_SIZE; i++) {
-            for (let j = 0; j < process.env.BOARD_SIZE; j++) {
-                if (this.board[i][j].value !== null) {
-                    occupied.push({ i, j })
+        this.board.forEach((row) => {
+            row.forEach(({ value, x, y }) => {
+                if (value !== null) {
+                    occupied.push({ x, y })
                 }
-            }
-        }
+            })
+        })
 
         const around = []
 
-        for (const cell of occupied) {
-            if (this.isAvailable(cell.i - 1, cell.j - 1, around)) around.push({ i: cell.i - 1, j: cell.j - 1 })
-            if (this.isAvailable(cell.i - 1, cell.j + 1, around)) around.push({ i: cell.i - 1, j: cell.j + 1 })
-            if (this.isAvailable(cell.i + 1, cell.j - 1, around)) around.push({ i: cell.i + 1, j: cell.j - 1 })
-            if (this.isAvailable(cell.i + 1, cell.j + 1, around)) around.push({ i: cell.i + 1, j: cell.j + 1 })
-            if (this.isAvailable(cell.i - 1, cell.j, around)) around.push({ i: cell.i - 1, j: cell.j })
-            if (this.isAvailable(cell.i + 1, cell.j, around)) around.push({ i: cell.i + 1, j: cell.j })
-            if (this.isAvailable(cell.i, cell.j - 1, around)) around.push({ i: cell.i, j: cell.j - 1 })
-            if (this.isAvailable(cell.i, cell.j + 1, around)) around.push({ i: cell.i, j: cell.j + 1 })
+        for (const { x, y } of occupied) {
+            if (this.isAvailable(x - 1, y - 1, around)) around.push({ x: x - 1, y: y - 1 })
+            if (this.isAvailable(x - 1, y + 1, around)) around.push({ x: x - 1, y: y + 1 })
+            if (this.isAvailable(x + 1, y - 1, around)) around.push({ x: x + 1, y: y - 1 })
+            if (this.isAvailable(x + 1, y + 1, around)) around.push({ x: x + 1, y: y + 1 })
+            if (this.isAvailable(x - 1, y, around)) around.push({ x: x - 1, y })
+            if (this.isAvailable(x + 1, y, around)) around.push({ x: x + 1, y })
+            if (this.isAvailable(x, y - 1, around)) around.push({ x, y: y - 1 })
+            if (this.isAvailable(x, y + 1, around)) around.push({ x, y: y + 1 })
         }
 
         return around
     }
 
-    static isAvailable(i, j, selected) {
-        return i >= 0
-            && j >= 0
-            && i < process.env.BOARD_SIZE
-            && j < process.env.BOARD_SIZE
-            && this.board[i][j].value === null
-            && ! _.some(selected, { i, j })
+    static isAvailable(x, y, selected) {
+        return x >= 0
+            && y >= 0
+            && x < process.env.BOARD_SIZE
+            && y < process.env.BOARD_SIZE
+            && this.board[x][y].value === null
+            && ! _.some(selected, { x, y })
     }
 }

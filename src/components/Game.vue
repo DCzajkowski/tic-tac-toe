@@ -1,15 +1,15 @@
 <template>
     <div class="flex flex-col">
-        <div v-for="(row, i) in board" :key="i" class="flex">
+        <div v-for="(row, x) in board" :key="x" class="flex">
             <div
-                v-for="(cell, j) in row"
-                :key="j"
-                class="border flex items-center justify-center hover:bg-grey-lightest"
-                :class="((isAvailable(i, j) && debug) ? 'bg-green-lightest ' : '') + ((cell.value === null) ? 'cursor-pointer' : 'cursor-default')"
+                v-for="(cell, y) in row"
+                :key="y"
+                class="border flex items-center justify-center hover:bg-grey-light"
+                :class="((isAvailable(x, y) && debug) ? 'bg-green-lightest ' : '') + ((cell.value === null) ? 'cursor-pointer' : 'cursor-default')"
                 :style="cellSize"
-                v-on="(cell.value === null) ? { click: () => setCell(i, j) } : {}"
+                v-on="(cell.value === null) ? { click: () => setCell(x, y) } : {}"
             >
-                {{ cell.value }}
+                {{ (cell.value === 0) ? 'x' : ((cell.value === 1) ? 'o' : '') }}
             </div>
         </div>
     </div>
@@ -30,16 +30,16 @@
                 return `width: ${size}; height: ${size}`
             },
             isAvailable() {
-                return (i, j) => _.some(this.$store.getters.available, { i, j })
+                return (x, y) => _.some(this.$store.getters.available, { x, y })
             },
             debug() {
                 return process.env.NODE_ENV !== 'production'
             },
         },
         methods: {
-            setCell(i, j) {
-                if (this.$store.getters.cell(i, j).value === null) {
-                    this.$store.commit('cell', { i, j, value: 'x' })
+            setCell(x, y) {
+                if (this.$store.getters.cell(x, y).value === null) {
+                    this.$store.commit('cell', { x, y, value: 0 })
                     this.$store.dispatch('calculateNextMove')
                 }
             },
