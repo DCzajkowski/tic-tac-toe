@@ -14,6 +14,19 @@ export default class AI {
         return { x: 1, y: 1, moves }
     }
 
+    static generateBoard(n) {
+        let board = []
+
+        for (let x = 0; x < n; x++) {
+            board[x] = []
+            for (let y = 0; y < n; y++) {
+                board[x][y] = { x, y, value: null }
+            }
+        }
+
+        return board
+    }
+
     /**
      * @return Array<Object<x: int, y: int>>
      */

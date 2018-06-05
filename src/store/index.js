@@ -35,16 +35,7 @@ export default new Vuex.Store({
     },
     actions: {
         initBoard({ commit }) {
-            let board = []
-
-            for (let x = 0; x < process.env.BOARD_SIZE; x++) {
-                board[x] = []
-                for (let y = 0; y < process.env.BOARD_SIZE; y++) {
-                    board[x][y] = { x, y, value: null }
-                }
-            }
-
-            commit('board', board)
+            commit('board', AI.generateBoard(process.env.BOARD_SIZE))
         },
         calculateNextMove(store) {
             const ai = new AI(store.getters.board)
