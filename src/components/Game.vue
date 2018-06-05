@@ -4,12 +4,12 @@
             <div
                 v-for="(cell, y) in row"
                 :key="y"
-                class="border flex items-center justify-center hover:bg-grey-light"
-                :class="((isAvailable(x, y) && debug) ? 'bg-green-lightest ' : '') + ((cell.value === null) ? 'cursor-pointer' : 'cursor-default')"
+                class="border flex items-center justify-center"
+                :class="((isAvailable(x, y) && debug) ? 'bg-green-lightest ' : '') + ((cell.player === null) ? 'cursor-pointer hover:bg-grey-light' : 'cursor-default')"
                 :style="cellSize"
-                v-on="(cell.value === null) ? { click: () => setCell(x, y) } : {}"
+                v-on="(cell.player === null) ? { click: () => setCell(x, y) } : {}"
             >
-                {{ (cell.value === 0) ? 'x' : ((cell.value === 1) ? 'o' : '') }}
+                {{ (cell.player === 0) ? 'x' : ((cell.player === 1) ? 'o' : '') }}
             </div>
         </div>
     </div>
@@ -38,10 +38,8 @@
         },
         methods: {
             setCell(x, y) {
-                if (this.$store.getters.cell(x, y).value === null) {
-                    this.$store.commit('cell', { x, y, value: 0 })
-                    this.$store.dispatch('calculateNextMove')
-                }
+                this.$store.commit('cell', { x, y, player: 0 })
+                this.$store.dispatch('calculateNextMove')
             },
         },
         created() {

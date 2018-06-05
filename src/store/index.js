@@ -10,6 +10,7 @@ export default new Vuex.Store({
     state: {
         board: [],
         available: [],
+        occupied: [],
     },
     mutations: {
         board(state, board) {
@@ -18,8 +19,12 @@ export default new Vuex.Store({
         available(state, available) {
             state.available = available
         },
-        cell(state, { x, y, value }) {
-            state.board[x][y].value = value
+        occupied(state, occupied) {
+            state.occupied = occupied
+        },
+        cell(state, { x, y, player }) {
+            state.board[x][y].player = player
+            state.occupied.push({ x, y, player })
         },
     },
     getters: {
@@ -28,6 +33,9 @@ export default new Vuex.Store({
         },
         board(state) {
             return state.board
+        },
+        occupied(state) {
+            return state.occupied
         },
         cell(state) {
             return (x, y) => state.board[x][y]
@@ -38,7 +46,10 @@ export default new Vuex.Store({
             commit('board', AI.generateBoard(process.env.BOARD_SIZE))
         },
         calculateNextMove(store) {
-            const ai = new AI(store.getters.board)
+            const ai = new AI(
+                JSON.parse(JSON.stringify(store.getters.board)),
+                JSON.parse(JSON.stringify(store.getters.occupied))
+            )
             const { x, y, moves } = ai.nextMove()
 
             store.commit('available', moves)
@@ -46,7 +57,7 @@ export default new Vuex.Store({
             store.commit('cell', {
                 x,
                 y,
-                value: 1,
+                player: 1,
             })
         },
     },
