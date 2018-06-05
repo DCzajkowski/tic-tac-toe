@@ -47,9 +47,10 @@ export default new Vuex.Store({
             commit('board', board)
         },
         calculateNextMove(store) {
-            const { x, y } = AI.nextMove(store.getters.board)
+            const ai = new AI(store.getters.board)
+            const { x, y, moves } = ai.nextMove()
 
-            store.commit('available', AI.getMoves())
+            store.commit('available', moves)
 
             store.commit('cell', {
                 x,

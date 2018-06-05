@@ -1,16 +1,23 @@
 import _ from 'lodash'
 
 export default class AI {
-    static nextMove(board) {
+    /**
+     * @param  Array<Array<Object<x: int, y: int>>> board
+     */
+    construct(board) {
         this.board = board
+    }
 
-        return { x: 1, y: 1 }
+    nextMove() {
+        const moves = this._getMoves()
+
+        return { x: 1, y: 1, moves }
     }
 
     /**
      * @return Array<Object<x: int, y: int>>
      */
-    static getMoves() {
+    _getMoves() {
         const occupied = []
 
         this.board.forEach((row) => {
@@ -24,20 +31,20 @@ export default class AI {
         const around = []
 
         for (const { x, y } of occupied) {
-            if (this.isAvailable(x - 1, y - 1, around)) around.push({ x: x - 1, y: y - 1 })
-            if (this.isAvailable(x - 1, y + 1, around)) around.push({ x: x - 1, y: y + 1 })
-            if (this.isAvailable(x + 1, y - 1, around)) around.push({ x: x + 1, y: y - 1 })
-            if (this.isAvailable(x + 1, y + 1, around)) around.push({ x: x + 1, y: y + 1 })
-            if (this.isAvailable(x - 1, y, around)) around.push({ x: x - 1, y })
-            if (this.isAvailable(x + 1, y, around)) around.push({ x: x + 1, y })
-            if (this.isAvailable(x, y - 1, around)) around.push({ x, y: y - 1 })
-            if (this.isAvailable(x, y + 1, around)) around.push({ x, y: y + 1 })
+            if (this._isAvailable(x - 1, y - 1, around)) around.push({ x: x - 1, y: y - 1 })
+            if (this._isAvailable(x - 1, y + 1, around)) around.push({ x: x - 1, y: y + 1 })
+            if (this._isAvailable(x + 1, y - 1, around)) around.push({ x: x + 1, y: y - 1 })
+            if (this._isAvailable(x + 1, y + 1, around)) around.push({ x: x + 1, y: y + 1 })
+            if (this._isAvailable(x - 1, y, around)) around.push({ x: x - 1, y })
+            if (this._isAvailable(x + 1, y, around)) around.push({ x: x + 1, y })
+            if (this._isAvailable(x, y - 1, around)) around.push({ x, y: y - 1 })
+            if (this._isAvailable(x, y + 1, around)) around.push({ x, y: y + 1 })
         }
 
         return around
     }
 
-    static isAvailable(x, y, selected) {
+    _isAvailable(x, y, selected) {
         return x >= 0
             && y >= 0
             && x < process.env.BOARD_SIZE
