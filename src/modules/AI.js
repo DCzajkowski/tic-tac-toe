@@ -55,18 +55,16 @@ export default class AI {
 
         if (level === 2) {
             this._set(m)
-
-            const value = this._heuristicValue(this.board)
+            const value = this._heuristicValue(this.occupied)
 
             this._rm(m)
 
             return value
         }
 
-        const moves = this._getMoves(this.occupied) // Array<Object<x: int, y: int>>
-
         this._set(m)
 
+        const moves = this._getMoves(this.occupied) // Array<Object<x: int, y: int>>
         const choices = [] // Array<Object<x: int, y: int, value: int>>
 
         moves.forEach((move) => {
@@ -89,8 +87,64 @@ export default class AI {
         }
     }
 
-    _heuristicValue(board) {
-        return _.random(1, 100)
+    _heuristicValue(occupied) {
+        const checkedPairs = []
+        let score = 0
+
+        occupied.forEach((cell) => {
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    if ((i === 0 && j === 0) || this._outOfBounds(i, j)) {
+                        continue
+                    }
+
+                    const currentCell = this.board[cell.x + i][cell.y + j]
+                    const pair = [currentCell, this.board[cell.x][cell.y]]
+
+                    if (
+                        currentCell.player === cell.player
+                        && ! this._hasPair(checkedPairs, pair)
+                    ) {
+                        checkedPairs.push(pair)
+
+                        const foundCellsInDirection = this._howManyCellsInDirection(currentCell, 2, i, j, checkedPairs)
+
+                        const weights = {
+                            2: 1,
+                            3: 50,
+                            4: 1000,
+                            5: 10000000,
+                            6: Infinity,
+                        }
+
+                        const changeBy = _.get(weights, foundCellsInDirection, 0)
+
+                        score += (cell.player === COMPUTER) ? changeBy : -changeBy
+                    }
+                }
+            }
+        })
+
+        return score
+    }
+
+    _howManyCellsInDirection(cell, step, xDirection, yDirection, checkedPairs) {
+        if (this._outOfBounds(cell.x + xDirection, cell.y + yDirection)) {
+            return step
+        }
+
+        if (this.board[cell.x + xDirection][cell.y + yDirection].player === cell.player) {
+            return this._howManyCellsInDirection(this.board[cell.x + xDirection][cell.y + yDirection], step + 1, xDirection, yDirection, checkedPairs)
+        }
+
+        return step
+    }
+
+    _hasPair(pairs, pair) {
+        return !! _.find(pairs, (el) =>
+            (_.isEqual(el[0], pair[0]) && _.isEqual(el[1], pair[1]))
+            || (_.isEqual(el[0], pair[1]) && _.isEqual(el[1], pair[0]))
+        )
     }
 
     _getPlayerFromLevel(level) {
@@ -148,11 +202,15 @@ export default class AI {
     }
 
     _isAvailable(x, y, occupied) {
-        return x >= 0
-            && y >= 0
-            && x < process.env.BOARD_SIZE
-            && y < process.env.BOARD_SIZE
+        return ! this._outOfBounds(x, y)
             && this.board[x][y].player === null
             && ! _.some(occupied, { x, y })
+    }
+
+    _outOfBounds(x, y) {
+        return x < 0
+            || y < 0
+            || x >= process.env.BOARD_SIZE
+            || y >= process.env.BOARD_SIZE
     }
 }
