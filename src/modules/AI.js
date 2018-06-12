@@ -55,6 +55,7 @@ export default class AI {
 
         if (level === 2) {
             this._set(m)
+
             const value = this._heuristicValue(this.occupied)
 
             this._rm(m)
@@ -81,9 +82,9 @@ export default class AI {
         const minChoice = _.minBy(choices, 'value')
 
         if (level % 2 === 1) {
-            return maxChoice ? maxChoice.value : choices[0]
+            return maxChoice ? maxChoice.value : choices[0].value
         } else {
-            return minChoice ? minChoice.value : choices[0]
+            return minChoice ? minChoice.value : choices[0].value
         }
     }
 
@@ -94,7 +95,7 @@ export default class AI {
         occupied.forEach((cell) => {
             for (let i = -1; i <= 1; i++) {
                 for (let j = -1; j <= 1; j++) {
-                    if ((i === 0 && j === 0) || this._outOfBounds(i, j)) {
+                    if ((i === 0 && j === 0) || this._outOfBounds(cell.x + i, cell.y + j)) {
                         continue
                     }
 
@@ -115,15 +116,19 @@ export default class AI {
                             4: 1000,
                             5: 10000000,
                             6: Infinity,
+                            7: Infinity,
+                            8: Infinity,
                         }
 
                         const changeBy = _.get(weights, foundCellsInDirection, 0)
 
-                        score += (cell.player === COMPUTER) ? changeBy : -changeBy
+                        score += (cell.player === COMPUTER) ? changeBy : -(changeBy * 10)
                     }
                 }
             }
         })
+
+        // console.log(score)
 
         return score
     }
